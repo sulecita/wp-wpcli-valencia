@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: wpcli_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile.wpcli
+    container_name: wpcli_wp
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      - ./wp-cli.yml:/var/www/html/wp-cli.yml
+      - ./commands:/var/www/html/wp-cli-commands
+
+volumes:
+  db_data:
+
+
